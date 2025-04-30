@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    #openPopupButton {
+        background-color: #40276a; /* Purple color for the button */
+        border-color: #40276a; /* Match the button border */
+    }
+    #openPopupButton:hover {
+        background-color: #40276a; /* Darker shade for hover effect */
+        border-color: #40276a;
+    }
+    .main-container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+    .content {
+        flex: 5;
+    }
+    .sidebar {
+        flex: 0.5;
+        padding: 1px;
+        background-color: #faf5ed;
+        border-left: 1px solid #ddd;
+        margin-left: auto;
+    }
+    .welcome-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
+
+    .welcome-container img {
+        max-height: 80px;
+    }
+
+    .welcome-container p {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .info-box {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="main-container">
+    <div class="content">
+        <img src="{{ url_for('static', filename='images/example_home_page.png') }}" alt="LectureMate Page" class="img-fluid">
+    </div>
+    <div class="sidebar">
+        <div class="welcome-container">
+            <img id="logoImg" src="{{ url_for('static', filename='images/logo.png') }}" alt="LectureMate Logo" class="img-fluid">
+            <p>Welcome, <strong>{{ info.user_id }}</strong></p>
+        </div>
+        <div class="text-center my-4">
+            <button id="openPopupButton" class="btn btn-primary btn-lg">Open Voice Recorder</button>
+        </div>
+        <div class="info-box" style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <h5><strong>LectureMate Pop-up Information</strong></h5>
+            <p><strong>Model being used by recorder:</strong> {{ info.model_name }}</p>
+            <p><strong>Hugging Face Token:</strong> {{ info.huggingface_token }}</p>
+            <p><strong>Database URI:</strong> {{ info.mongodb_uri }}</p>
+            <p><strong>Username:</strong> {{ info.user_id }}</p>
+            <p><strong>Session ID:</strong> {{ info.session_id }}</p>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='popup.js') }}"></script>
+{% endblock content %}
