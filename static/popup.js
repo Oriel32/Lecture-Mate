@@ -293,16 +293,12 @@ function openPopup() {
             return;
         }
 
-        // Pause the timer only if not paused yet
-        if (!isPaused) {
-            pauseTimer();
-        }
         // Create a modal-like div to display the questions
         const questionModal = popup.document.createElement("div");
         questionModal.style.position = "fixed";
-        questionModal.style.top = "50%";
-        questionModal.style.left = "50%";
-        questionModal.style.transform = "translate(-50%, -50%)";
+        questionModal.style.top = "10px"; // Position at the top
+        questionModal.style.right = "10px"; // Changed to top-right position
+        questionModal.style.width = "auto"; // Ensure the modal doesn't span the entire width
         questionModal.style.backgroundColor = "#fff";
         questionModal.style.border = "1px solid #ccc";
         questionModal.style.padding = "20px";
@@ -320,12 +316,16 @@ function openPopup() {
 
         // Create a list of questions
         const questionList = popup.document.createElement("ul");
+        questionList.style.direction = "rtl"; // Set direction to right-to-left
         waitingQuestions.forEach((question, index) => {
             const listItem = popup.document.createElement("li");
             listItem.textContent = question;
             listItem.style.cursor = "pointer";
             listItem.style.color = "#007BFF";
             listItem.style.textDecoration = "underline";
+            listItem.style.borderBottom = "1px solid #ccc"; // Add a line between items
+            listItem.style.padding = "5px 0"; // Add spacing between items
+
 
             // Add click event to call /answer-question with the index
             listItem.onclick = async () => {
@@ -333,6 +333,10 @@ function openPopup() {
                     // Find the index of the question in the questionsList
                     questionIndex = questionsList.findIndex(q => q === question);
             
+                    // If the user want to answer the question when on pause state - resume the recording
+                    if (isPaused){
+                        pauseTimer();
+                    }
                     // Call the API with the selected question index
                     const data = await callApi('/answer-question', {
                         method: 'POST',
@@ -349,7 +353,6 @@ function openPopup() {
                     // Handle errors and update the status
                     updateStatus(`Error answering question ${index + 1}: ${error.message}`, true);
                 } finally {
-                    pauseTimer();
                     questionsButton.textContent = `❓ ${waitingQuestions.length} ❓`;
                     questionsButton.disabled = true;
                     answerButton.disabled = false;

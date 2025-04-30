@@ -569,7 +569,6 @@ class VoiceRecorder:
             print("answer_flag is not set")
             self.answers.append("")
             self.answer_flag.set()
-            self.pause_flag.clear()
             return f"Answering question {index}..."
         
     def save_transcript_to_mongodb(self):
