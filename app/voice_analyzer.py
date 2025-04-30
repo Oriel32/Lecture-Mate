@@ -258,7 +258,7 @@ class VoiceRecorder:
                 print(f"You said at {timestamp}: {text} (confidence: {confidence})")
                 
                 if self.answer_flag.is_set():
-                    self.answers[self.answer_count] += text
+                    self.answers[self.answer_count] += f" {text}"
                 if "stop the loop" in text.lower():
                     self.stop()
                 self.analayzing_flag.clear()
