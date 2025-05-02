@@ -64,7 +64,6 @@ class VoiceRecorder:
         self.user_id = user_id
         self.session_id = session_id
         return {"model_name" : self.model_name,
-                "huggingface_token" : self.huggingface_token,
                 "mongodb_uri" : self.mongodb_uri,
                 "user_id" : self.user_id,
                 "session_id" : self.session_id
