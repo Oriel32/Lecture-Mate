@@ -56,6 +56,9 @@
         border-radius: 5px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+    .form-select {
+        width: 100%; /* Make the select element fit the width of its container */
+    }
 </style>
 
 <div class="main-container">
@@ -74,7 +77,13 @@
             <p><strong>Model being used by recorder:</strong> {{ info.model_name }}</p>
             <p><strong>Database URI:</strong> {{ info.mongodb_uri }}</p>
             <p><strong>Username:</strong> {{ info.user_id }}</p>
-            <p><strong>Session ID:</strong> {{ info.session_id }}</p>
+            <label for="sessionSelect"><strong>Session:</strong></label>
+            <select id="sessionSelect" name="sessionSelect" class="form-select">
+                <option value="new">New</option>
+                {% for session in info.sessions_topic %}
+                <option value="{{ session }}">{{ session }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
 </div>

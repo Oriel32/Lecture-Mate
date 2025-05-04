@@ -1,3 +1,4 @@
+from .user_data import User
 from dotenv import load_dotenv
 import json
 import time
@@ -16,7 +17,7 @@ from openai import OpenAI
 load_dotenv()
 
 class VoiceRecorder:
-    def __init__(self):
+    def __init__(self, user_id="user123"):
         self.transcript = {}
         self.questions = []
         self.question_count = 0
@@ -40,8 +41,8 @@ class VoiceRecorder:
         self.audio_queue = queue.Queue()
         self.recognizer = sr.Recognizer()
         
-        self.user_id = ""
-        self.session_id = ""
+        self.user_id = user_id
+        self.user = User(user_id)
         self.mongodb_uri = os.getenv("MONGODB_URI")
 
         # Load the LLM Model
@@ -57,16 +58,25 @@ class VoiceRecorder:
         # self.model, self.tokenizer, self.device = self.load_language_model()
         self.model = self.load_language_model()
  
-    def info(self, user_id="user123", session_id=0):
+    def info(self):
         """
-        Returns the model name and the Hugging Face token.
+        Returns the model name, 
         """
-        self.user_id = user_id
-        self.session_id = session_id
+        sessions_info = []
+        sessions_id = []
+        if self.user.user_data:
+            for session in self.user.user_data.get("sessions", []):
+                sessions_id.append(session.get("session_id"))
+                topic = session.get("session_topic")
+                if topic:
+                    sessions_info.append(topic)
+                else:
+                    sessions_info.append(sessions_id[-1])
         return {"model_name" : self.model_name,
                 "mongodb_uri" : self.mongodb_uri,
                 "user_id" : self.user_id,
-                "session_id" : self.session_id
+                "sessions_id": sessions_id,
+                "sessions_topic": sessions_info
                 }
         
     def run(self):
@@ -545,6 +555,49 @@ class VoiceRecorder:
             print(f"Error generating feedback: {e}")
             return None
         
+    def generate_topic(self):
+        """
+        Generates a question from the transcript using the loaded LLM model.
+        """ 
+        if not self.model:
+            print("Model not loaded. Skipping question generation.")
+            return None
+        
+        if len(self.transcript) < 2:
+            print("No transcript available.")
+            return None
+        formatted_transcript=""
+        if self.user.session_data:
+            formatted_transcript = "\n".join([f"{k}: {v}" for k, v in self.user.session_data["transcript"].items()]) 
+        with self.transcript_lock:
+            if not self.transcript:
+                print("No transcript available.")
+                return "No transcript available."
+            formatted_transcript += "\n".join([f"{k}: {v}" for k, v in self.transcript.items()])
+            
+        try:
+            # using the openai API to generate a question
+            response = self.model.responses.create(
+                model=self.model_name,
+                input=[
+                    {"role": "system", "content": "You will recieve a transcript of a lecture. You will give back a topic for the transcript in 3-10 words"},
+                    {"role": "user", "content": formatted_transcript}
+                ],
+                reasoning={},
+                tools=[],
+                temperature=0.9,
+                max_output_tokens=16,
+                top_p=0.9,
+                store=True
+            )
+            response = response.output_text
+            print("\n🔹 Generated topic: ", response)
+            return response
+        
+        except Exception as e:
+            print(f"Error generating topic: {e}")
+            return None
+        
     def answer_question(self, index):
         """
         Answer and Submit the question.
@@ -572,72 +625,22 @@ class VoiceRecorder:
         
     def save_transcript_to_mongodb(self):
         """
-        Saves the transcript to MongoDB. If the user exists, it adds the new session to their sessions array.
-        If the session ID already exists, it appends the new data to the existing session.
+        Saves the transcript to MongoDB.
         """
-        if not self.mongodb_uri:
-            print("MongoDB URI is not provided in environment variables.")
-            return
+        # Prepare the session data
+        if self.transcript:
+            session_data = {
+                "session_id": self.user.session_id,
+                "session_topic": self.generate_topic(),
+                "time": list(self.transcript.keys())[-1],
+                "questions": self.questions,
+                "answers": self.answers,
+                "feedbacks": self.feedbacks,
+                "grades": self.grades,
+                "transcript": self.transcript
+            }
 
-        try:
-            # Connect to MongoDB
-            client = MongoClient(self.mongodb_uri)
-            db = client["mydb"]
-            collection = db["transcripts"]
-
-            # Check if the session ID exists
-            user_data = collection.find_one({"user_id": self.user_id})
-            if user_data:
-                existing_session = next(
-                    (session for session in user_data.get("sessions", []) if session["session_id"] == self.session_id),
-                    None
-                )
-                if existing_session is None and self.session_id == 0:
-                    # If session ID doesn't exist, create a new one with the max session ID + 1
-                    max_session_id = max([session["session_id"] for session in user_data.get("sessions", [])], default=0)
-                    self.session_id = max_session_id + 1
-            else:
-                # If user doesn't exist, create a new user with session ID 1
-                existing_session = None
-                self.session_id = 1
-            
-            # Prepare the session data
-            if self.transcript:
-                session_data = {
-                    "session_id": self.session_id,
-                    "time": list(self.transcript.keys())[-1],
-                    "questions": self.questions,
-                    "answers": self.answers,
-                    "feedbacks": self.feedbacks,
-                    "grades": self.grades,
-                    "transcript": self.transcript
-                }
-
-            if existing_session:
-                # Append new data to the existing session
-                existing_session["questions"].extend(self.questions)
-                existing_session["answers"].extend(self.answers)
-                existing_session["feedbacks"].extend(self.feedbacks)
-                existing_session["grades"].extend(self.grades)
-                existing_session["transcript"].update(self.transcript)
-
-                # Update the session in the database
-                collection.update_one(
-                    {"user_id": self.user_id, "sessions.session_id": self.session_id},
-                    {"$set": {"sessions.$": existing_session}}
-                )
-                print(f"Session updated for user_id: {self.user_id}, session_id: {self.session_id}")
-            else:
-                # Add a new session to the user's sessions array
-                collection.update_one(
-                    {"user_id": self.user_id},
-                    {"$push": {"sessions": session_data}},
-                    upsert=True  # If the user doesn't exist, insert a new document
-                )
-                print(f"New session added for user_id: {self.user_id}, session_id: {self.session_id}")
-
-        except Exception as e:
-            print("Error saving transcript to MongoDB:", e)
+        self.user.save_session_to_mongodb(session_data)
 
 if __name__ == "__main__":
     input("Press Enter to start voice recording...")

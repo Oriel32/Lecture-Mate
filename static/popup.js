@@ -2,6 +2,11 @@
 
 // Function to open the popup window and handle interactions
 function openPopup() {
+    // Get the session_id from the dropdown
+    const sessionSelect = document.getElementById("sessionSelect");
+    localStorage.setItem("session_id", sessionSelect ? sessionSelect.selectedIndex : 0);
+    const session_id = localStorage.getItem("session_id");
+
     // Open a new popup window
     const popup = window.open("", "Popup", "width=700,height=500");
     if (!popup) {
@@ -20,18 +25,37 @@ function openPopup() {
                 button { margin: 5px; padding: 8px 12px; cursor: pointer; text-align: center;}
                 #output { margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px; }
                 p { margin: 5px 0; text-align: center; }
+                #sessionIdDisplay {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background-color: #fff;
+                    padding: 5px 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    font-size: 0.9rem;
+                    color: #40276a;
+                }
             </style>
         </head>
         <body>
+            
             <div>
-                <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo" class="img-fluid" style="max-height: 100px;">
+                <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo" class="img-fluid" 
+                    style="max-height: 70px; position: absolute; top: 0px; left: 10px;">
+                <div id="sessionIdDisplay">Session ID: ${session_id}</div>
             </div>
-            <button id="runScriptButton">Start Session▶️</button>
-            <p id="timerDisplay"></p>
-            <button id="questionsButton">❓ 0 ❓</button>
-            <button id="answerButton">Submit Answer</button>
-            <button id="pauseButton">Pause⏯️</button>
-            <button id="stopButton">Stop Session⏹️</button> <div id="output"><p>Click "Run Voice Recorder" to start.</p></div>
+            <div style="margin-bottom: 50px;"> <!-- Added margin-bottom -->
+            
+            </div>
+            <div>
+                <button id="runScriptButton">Start Session▶️</button>
+                <p id="timerDisplay"></p>
+                <button id="questionsButton">❓ 0 ❓</button>
+                <button id="answerButton">Submit Answer</button>
+                <button id="pauseButton">Pause⏯️</button>
+                <button id="stopButton">Stop Session⏹️</button> <div id="output"><p>Click "Run Voice Recorder" to start.</p></div>
+            </div>
         </body>
         </html>
     `);
@@ -54,6 +78,9 @@ function openPopup() {
     const answerButton = popup.document.getElementById("answerButton")
     const outputDiv = popup.document.getElementById("output");
     const timerElement = popup.document.getElementById("timerDisplay");
+
+
+    
     const questionsList = [];
     const waitingQuestions = [];
     
@@ -227,7 +254,11 @@ function openPopup() {
 
         try {
             startTimer();
-            const data = await callApi('/run-voice-recorder');
+            const data = await callApi('/run-voice-recorder', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id })
+            });
             updateStatus(`Recorder started: ${data.message}`);
         } catch (error) {
             // Error is already logged by callApi
