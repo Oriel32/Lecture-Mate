@@ -5,7 +5,7 @@ function openPopup() {
     // Get the session_id from the dropdown
     const sessionSelect = document.getElementById("sessionSelect");
     localStorage.setItem("session_id", sessionSelect ? sessionSelect.selectedIndex : 0);
-    const session_id = localStorage.getItem("session_id");
+    const session_id = localStorage.getItem("session_id");    
 
     // Open a new popup window
     const popup = window.open("", "Popup", "width=700,height=500");
@@ -21,40 +21,192 @@ function openPopup() {
         <head>
             <title>LectureMate</title>
             <style>
-                body { font-family: sans-serif; padding: 15px; text-align: center; background-color: #faf5ed; color: #40276a;}
-                button { margin: 5px; padding: 8px 12px; cursor: pointer; text-align: center;}
-                #output { margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px; }
-                p { margin: 5px 0; text-align: center; }
+                /* Base styles */
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    color: #2c1810;
+                    line-height: 1.6;
+                    margin: 0;
+                }
+
+                /* Layout components */
+                .container {
+                    max-width: 800px;
+                    margin: 0 auto;
+                    background-color: #faf5ed;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                }
+
+                .header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 15px 0;
+                    border-bottom: 2px solid #f0f0f0;
+                    margin-bottom: 30px;
+                }
+
+                /* Logo and branding */
+                #logoImg {
+                    height: 70px;
+                    object-fit: contain;
+                }
+
                 #sessionIdDisplay {
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    background-color: #fff;
-                    padding: 5px 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 5px;
+                    background-color: #f8f9fa;
+                    padding: 8px 15px;
+                    border-radius: 20px;
                     font-size: 0.9rem;
+                    color: #565656;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+
+                #welcomeMessage {
+                    font-size: 1.2rem;
+                    color: #2c1810;
+                    margin: 0 20px;
+                }
+
+                /* Controls section */
+                .controls {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 20px;
+                }
+
+                .button-group {
+                    display: flex;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                /* Buttons */
+                button {
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 25px;
+                    background-color: #40276a;
+                    color: white;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                button:hover {
+                    background-color: #553285;
+                    transform: translateY(-1px);
+                }
+
+                button:disabled {
+                    background-color: #cccccc;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+
+                /* Timer and output */
+                #timerDisplay {
+                    font-size: 1.2rem;
+                    font-weight: 600;
                     color: #40276a;
+                    padding: 10px 20px;
+                    background-color: #f8f9fa;
+                    border-radius: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                }
+
+                #output {
+                    margin-top: 20px;
+                    padding: 15px;
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    max-height: 200px;
+                    overflow-y: auto;
+                }
+
+                #output p {
+                    margin: 8px 0;
+                    padding: 8px;
+                    border-radius: 4px;
+                    background-color: white;
+                }
+
+                /* Question modal styles */
+                .question-modal {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background-color: white;
+                    border-radius: 12px;
+                    padding: 20px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                    max-width: 400px;
+                    width: 90%;
+                }
+
+                .question-list {
+                    list-style: none;
+                    padding: 0;
+                    margin: 15px 0;
+                }
+
+                .question-item {
+                    padding: 10px;
+                    margin: 5px 0;
+                    border-radius: 8px;
+                    background-color: #f8f9fa;
+                    cursor: pointer;
+                    transition: background-color 0.2s ease;
+                }
+
+                .question-item:hover {
+                    background-color: #e9ecef;
                 }
             </style>
         </head>
         <body>
-            
-            <div>
-                <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo" class="img-fluid" 
-                    style="max-height: 70px; position: absolute; top: 0px; left: 10px;">
-                <div id="sessionIdDisplay">Session ID: ${session_id}</div>
-            </div>
-            <div style="margin-bottom: 50px;"> <!-- Added margin-bottom -->
-            
-            </div>
-            <div>
-                <button id="runScriptButton">Start Session▶️</button>
-                <p id="timerDisplay"></p>
-                <button id="questionsButton">❓ 0 ❓</button>
-                <button id="answerButton">Submit Answer</button>
-                <button id="pauseButton">Pause⏯️</button>
-                <button id="stopButton">Stop Session⏹️</button> <div id="output"><p>Click "Run Voice Recorder" to start.</p></div>
+            <div class="container">
+                <header class="header">
+                    <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo">
+                    <p id="welcomeMessage">Welcome ${userId}</p>
+                    <div id="sessionIdDisplay">${sessions_topic[session_id - 1]}</div>
+                </header>
+
+                <main class="controls">
+                    <div class="button-group">
+                        <button id="runScriptButton">
+                            <span>Start Session</span>
+                            <span>▶️</span>
+                        </button>
+                        <button id="pauseButton">
+                            <span>Pause</span>
+                            <span>⏯️</span>
+                        </button>
+                        <button id="stopButton">
+                            <span>Stop Session</span>
+                            <span>⏹️</span>
+                        </button>
+                    </div>
+
+                    <div id="timerDisplay"></div>
+
+                    <div class="button-group">
+                        <button id="questionsButton">❓ 0 ❓</button>
+                        <button id="answerButton">Submit Answer</button>
+                    </div>
+
+                    <div id="output">
+                        <p>Click "Start Session" to begin recording</p>
+                    </div>
+                </main>
             </div>
         </body>
         </html>
@@ -162,7 +314,7 @@ function openPopup() {
                         console.error('Error generating question:', error);
                         updateStatus(`Error generating question ${error.message}`, true);
                     } finally {
-                        randomNumber += Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
+                        randomNumber = seconds + Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
                     }
                 }
             }
@@ -314,7 +466,12 @@ function openPopup() {
         } catch (error) {
             // Error logged by callApi
             updateStatus(`Failed to stop: ${error.message}`, true);
-        }
+            // Re-enable run, disable pause/stop
+            runButton.disabled = false;
+            pauseButton.textContent = "Pause⏯️"; // Reset button text
+            updateStatus(`Stopped: ${data.message}`);
+            randomNumber = Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Reset random number
+        } 
     };
 
     // Answer Question
@@ -378,6 +535,12 @@ function openPopup() {
                     // Remove the question from the waitingQuestions list
                     waitingQuestions.splice(index, 1);
             
+                    // Disable randomNumber
+                    randomNumber = 0
+                    
+                    questionsButton.disabled = true;
+                    answerButton.disabled = false;
+                    
                     // Update the status with the data message
                     updateStatus(`Answering question ${questionIndex + 1}: ${data.message}`);
                 } catch (error) {
@@ -385,9 +548,7 @@ function openPopup() {
                     updateStatus(`Error answering question ${index + 1}: ${error.message}`, true);
                 } finally {
                     questionsButton.textContent = `❓ ${waitingQuestions.length} ❓`;
-                    questionsButton.disabled = true;
-                    answerButton.disabled = false;
-                    // Close the modal after answering
+                    // Close the modal after start answering
                     questionModal.remove();
                 }
             };
@@ -423,6 +584,8 @@ function openPopup() {
         } catch (error) {
             // Error logged by callApi
             updateStatus(`Failed to answer: ${error.message}`, true);
+        } finally {
+            randomNumber = seconds + Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
         }
     };
 

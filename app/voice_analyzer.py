@@ -17,7 +17,7 @@ from openai import OpenAI
 load_dotenv()
 
 class VoiceRecorder:
-    def __init__(self, user_id="user123"):
+    def __init__(self, user_id="Guest"):
         self.transcript = {}
         self.questions = []
         self.question_count = 0
@@ -64,7 +64,7 @@ class VoiceRecorder:
         """
         sessions_info = []
         sessions_id = []
-        if self.user.user_data:
+        if self.user.user_data and self.user_id is not "Guest":
             for session in self.user.user_data.get("sessions", []):
                 sessions_id.append(session.get("session_id"))
                 topic = session.get("session_topic")

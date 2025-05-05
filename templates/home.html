@@ -89,4 +89,8 @@
 </div>
 
 <script src="{{ url_for('static', filename='popup.js') }}"></script>
+<script>
+    const userId = "{{ info.user_id }}";
+    const sessions_topic = {{ info.sessions_topic | tojson }}; // working with the errors 
+</script>
 {% endblock content %}

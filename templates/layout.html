@@ -17,13 +17,15 @@
 
             div {text-align: center;}
             body {background-color: #f8f9fa;color: #40276a;}
-            </style>
+        </style>
 
         {% if title %}
-            <title>Flask App - {{ title }}</title>
+            <title>LectureMate - {{ title }}</title>
         {% else %}
-            <title>Flask App</title>
+            <title>LectureMate</title>
         {% endif %}
+
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     </head>
     <body>
         <div class="container">
