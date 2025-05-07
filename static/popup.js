@@ -5,10 +5,18 @@ function openPopup() {
     // Get the session_id from the dropdown
     const sessionSelect = document.getElementById("sessionSelect");
     localStorage.setItem("session_id", sessionSelect ? sessionSelect.selectedIndex : 0);
-    const session_id = localStorage.getItem("session_id");    
+    const session_id = localStorage.getItem("session_id");
+
+    // Check if the session ID is a new session
+    let session;
+    if (session_id === "0") {
+        session = "New Session";
+    } else {
+        session = sessions_topic[session_id - 1];
+    }
 
     // Open a new popup window
-    const popup = window.open("", "Popup", "width=700,height=500");
+    const popup = window.open("", "Popup", "width=850,height=500");
     if (!popup) {
         alert("Popup blocked! Please allow popups for this site.");
         return;
@@ -45,6 +53,7 @@ function openPopup() {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
+                    font-weight: 500;
                     padding: 15px 0;
                     border-bottom: 2px solid #f0f0f0;
                     margin-bottom: 30px;
@@ -177,7 +186,7 @@ function openPopup() {
                 <header class="header">
                     <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo">
                     <p id="welcomeMessage">Welcome ${userId}</p>
-                    <div id="sessionIdDisplay">${sessions_topic[session_id - 1]}</div>
+                    <div id="sessionIdDisplay">${session}</div>
                 </header>
 
                 <main class="controls">

@@ -73,7 +73,7 @@ class User:
                 self.session_data["answers"].extend(new_session_data["answers"])
                 self.session_data["feedbacks"].extend(new_session_data["feedbacks"])
                 self.session_data["grades"].extend(new_session_data["grades"])
-                self.session_data["transcript"].update(new_session_data["transcript"])
+                self.session_data["transcript"] = new_session_data["transcript"]
 
                 # Update the session in the database
                 collection.update_one(

@@ -55,7 +55,7 @@ def run_voice_recorder():
         session_id = int(data.get('session_id', 0))  # Default to 0 if not provided
 
         logging.info(f"session_id: {session_id}")
-        recorder.user.set_session_data(session_id)
+        recorder.set_session_data(session_id)
         
         # Consider if recorder.run() should be started in a separate thread
         # if it's blocking and you want the endpoint to return immediately.

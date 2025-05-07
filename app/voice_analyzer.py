@@ -18,6 +18,7 @@ load_dotenv()
 
 class VoiceRecorder:
     def __init__(self, user_id="Guest"):
+        self.old_transcript = None
         self.transcript = {}
         self.questions = []
         self.question_count = 0
@@ -64,7 +65,7 @@ class VoiceRecorder:
         """
         sessions_info = []
         sessions_id = []
-        if self.user.user_data and self.user_id is not "Guest":
+        if self.user.user_data and self.user_id != "Guest":
             for session in self.user.user_data.get("sessions", []):
                 sessions_id.append(session.get("session_id"))
                 topic = session.get("session_topic")
@@ -79,6 +80,11 @@ class VoiceRecorder:
                 "sessions_topic": sessions_info
                 }
         
+    def set_session_data(self, session_id):
+        session_data = self.user.set_session_data(session_id)
+        if session_data:
+            self.old_transcript = session_data["transcript"]
+    
     def run(self):
         """
         Starts the producer and consumer threads.
@@ -118,29 +124,25 @@ class VoiceRecorder:
         print("All threads have finished.")
         # --- End waiting section ---
         
-        if len(self.transcript) < 1:
-            print("Recording stopped.")
-            self.reset()
-            # return "Not enough data to generate a question."
+        print("Recording stopped.")
         
-        # Generate a question from the transcript
-        # response = self.generate_question()
-                
-        # Save the transcript to MongoDB
-        self.save_transcript_to_mongodb()
-        
+        # Save the transcript to MongoDB if have transcript
+        if len(self.transcript) > 2:
+            self.transcript = {** self.old_transcript, **self.transcript}
+            self.save_transcript_to_mongodb()
+            
         print("Recording stopped.")
         self.reset()
-        # return response
     
     def pause(self):
         """
         Pauses the recording.
         """
         self.pause_flag.set()
+        
+        """# Wait for the recording thread to finish - can be removed, make sure that clearing pause flag before 
         while self.recording_flag.is_set() or not self.audio_queue.empty():
-            # Wait for the recording thread to finish
-            time.sleep(0.1)
+            time.sleep(0.1)"""
         print("Recording paused.")
 
     def resume(self):
@@ -154,6 +156,7 @@ class VoiceRecorder:
         """
         Resets the recorder by clearing the variables.
         """
+        self.old_transcript = None
         self.transcript = {}
         self.questions = []
         self.answers = []
@@ -231,6 +234,18 @@ class VoiceRecorder:
             if timestamp and audio:
                 self.analyze_audio(timestamp, audio)
                 self.audio_queue.task_done()
+        
+        while self.recording_flag.is_set():
+            time.sleep(0.5)
+            
+        try:
+            timestamp, audio = self.audio_queue.get(timeout=5)  # Blocks for 5 seconds
+        except queue.Empty:
+            print("Queue is empty - closing session")
+        
+        if timestamp and audio:
+            self.analyze_audio(timestamp, audio)
+            self.audio_queue.task_done()
 
     def analyze_audio(self, timestamp, audio):
         """
