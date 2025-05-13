@@ -80,15 +80,6 @@
             <p><strong>Model being used by recorder:</strong> {{ info.model_name }}</p>
             <p><strong>Database URI:</strong> {{ info.mongodb_uri }}</p>
             <p><strong>Username:</strong> {{ info.user_id }}</p>
-            <div class="form-group">
-                <label for="sessionSelect"><strong>Session:</strong></label>
-                <select id="sessionSelect" name="sessionSelect" class="form-select mx-auto">
-                    <option value="newSession">New Session</option>
-                    {% for session in info.sessions_topic %}
-                    <option value="{{ session }}">{{ session }}</option>
-                    {% endfor %}
-                </select>
-            </div>
         </div>
     </div>
 </div>

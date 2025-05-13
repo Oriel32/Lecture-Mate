@@ -85,18 +85,19 @@ body {
     margin-bottom: 15px;
 }
 
-/* Form elements */
 .form-select {
-    width: 70%;
+    width: 250px;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #f1edf7;
     border: none;
     outline: none;
-    background-color: transparent;
-    margin: 0 auto;
-    display: block;
 }
 
 .form-group {
-    margin-top: 10px;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
 }
 
 /* Buttons */
@@ -129,6 +130,7 @@ body {
     padding: 15px 0;
     border-bottom: 2px solid #f0f0f0;
     margin-bottom: 30px;
+    position: relative;
 }
 
 .popup-logo {
@@ -163,10 +165,10 @@ body {
 .welcome-message {
     font-size: 0.9rem;
     margin: 0 20px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     padding: 8px 15px;
-    background-color: #f8f9fa;
+    background-color: #f1edf7;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -210,18 +212,28 @@ body {
     transform: none;
 }
 
+.form-select:disabled{
+    background-color: #e6e1f0;
+    color: #565656;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
 .timer-display {
     font-size: 1.2rem;
     font-weight: bold;
     padding: 8px 16px;
     border-radius: 5px;
-    background-color: #f0f0f0;
+    background-color: #f1edf7;
     margin: 5px 0 5px 0;
     text-align: center;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    z-index: 10;
 }
 
 .timer-paused {
@@ -301,6 +313,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 20px;
+    margin-right: 0;
 }
 

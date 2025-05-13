@@ -2,18 +2,6 @@
 
 // Function to open the popup window and handle interactions
 function openPopup() {
-    // Get the session_id from the dropdown
-    const sessionSelect = document.getElementById("sessionSelect");
-    localStorage.setItem("session_id", sessionSelect ? sessionSelect.selectedIndex : 0);
-    const session_id = localStorage.getItem("session_id");
-
-    // Check if the session ID is a new session
-    let session;
-    if (session_id === "0") {
-        session = "New Session";
-    } else {
-        session = sessions_topic[session_id - 1];
-    }
 
     // Open a new popup window
     const popup = window.open("", "Popup", "width=850,height=650");
@@ -35,10 +23,17 @@ function openPopup() {
                 <header class="popup-header">
                     <div class="logo-welcome-container">
                         <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo" class="popup-logo">
-                        <p class="welcome-message">Welcome ${userId}</p>
+                        <p class="welcome-message">Welcome ${userId}!</p>
                     </div>
-                    <div id="timerDisplay" class="timer-display">00:00:00</div>
-                    <div class="session-display" title="${session}">${session}</div>
+                    <div 
+                        id="timerDisplay" class="timer-display">00:00:00
+                    </div>
+                    <div class="form-group">
+                        <select id="sessionSelect" name="sessionSelect" class="form-select">
+                            <option value="newSession">New Session</option>
+                            ${sessions_topic.map(session => `<option value="${session}">${session}</option>`).join('')}
+                        </select>
+                    </div>
                 </header>
 
                 <main class="controls">
@@ -97,7 +92,9 @@ function openPopup() {
     const outputDiv = popup.document.getElementById("output");
     const timerElement = popup.document.getElementById("timerDisplay");
 
-
+    // Get the session_id from the dropdown
+    const sessionSelect = popup.document.getElementById("sessionSelect");
+    const session_id = sessionSelect.selectedIndex;
     
     const questionsList = [];
     const waitingQuestions = [];
@@ -325,9 +322,10 @@ function openPopup() {
         isRecording = true;
         isPaused = false;
         runButton.disabled = true; // Disable run button once started
+        sessionSelect.disabled = true;
         outputDiv.innerHTML = ""; // Clear previous output
         updateStatus("Starting recording...");
-
+        console.log(session_id);
 
         try {
             startTimer();
@@ -383,6 +381,7 @@ function openPopup() {
             const data = await callApi('/stop-recording');
             // Re-enable run, disable pause/stop
             runButton.disabled = false;
+            sessionSelect.disabled = false;
             pauseButton.textContent = "Pause⏯️"; // Reset button text
             updateStatus(`Stopped: ${data.message}`);
             randomNumber = Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Reset random number
