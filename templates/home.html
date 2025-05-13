@@ -66,7 +66,7 @@
 
 <div class="main-container">
     <div class="content">
-        <div id="contentElements" class="text-center my-4">
+        <div id="contentElements">
             <p>Welcome to pre-prod, <strong>{{ info.user_id }}</strong></p>
             <button id="openPopupButton" class="btn btn-primary btn-lg">Start LectureMate</button>
         </div>
@@ -75,18 +75,20 @@
         <div class="info-container">
             <img id="logoImg" src="{{ url_for('static', filename='images/logo.png') }}" alt="LectureMate Logo" class="img-fluid">
         </div>
-        <div class="info-box" style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <div class="info-box text-center">
             <h5><strong>LectureMate Pop-up Information</strong></h5>
             <p><strong>Model being used by recorder:</strong> {{ info.model_name }}</p>
             <p><strong>Database URI:</strong> {{ info.mongodb_uri }}</p>
             <p><strong>Username:</strong> {{ info.user_id }}</p>
-            <label for="sessionSelect"><strong>Session:</strong></label>
-            <select id="sessionSelect" name="sessionSelect" class="form-select">
-                <option value="newSession">New Session</option>
-                {% for session in info.sessions_topic %}
-                <option value="{{ session }}">{{ session }}</option>
-                {% endfor %}
-            </select>
+            <div class="form-group">
+                <label for="sessionSelect"><strong>Session:</strong></label>
+                <select id="sessionSelect" name="sessionSelect" class="form-select mx-auto">
+                    <option value="newSession">New Session</option>
+                    {% for session in info.sessions_topic %}
+                    <option value="{{ session }}">{{ session }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
     </div>
 </div>
@@ -94,7 +96,6 @@
 <script src="{{ url_for('static', filename='popup.js') }}"></script>
 <script>
     const userId = "{{ info.user_id }}";
-    const sessions_topic = {{ info.sessions_topic | tojson }}; // working with the errors 
-    
+    const sessions_topic = {{ info.sessions_topic | tojson }}; // works
 </script>
 {% endblock content %}

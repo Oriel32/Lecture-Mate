@@ -16,7 +16,7 @@ function openPopup() {
     }
 
     // Open a new popup window
-    const popup = window.open("", "Popup", "width=850,height=500");
+    const popup = window.open("", "Popup", "width=850,height=650");
     if (!popup) {
         alert("Popup blocked! Please allow popups for this site.");
         return;
@@ -28,192 +28,46 @@ function openPopup() {
         <html>
         <head>
             <title>LectureMate</title>
-            <style>
-                /* Base styles */
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    padding: 20px;
-                    background-color: #f8f9fa;
-                    color: #2c1810;
-                    line-height: 1.6;
-                    margin: 0;
-                }
-
-                /* Layout components */
-                .container {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    background-color: #faf5ed;
-                    border-radius: 12px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    padding: 20px;
-                }
-
-                .header {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    font-weight: 500;
-                    padding: 15px 0;
-                    border-bottom: 2px solid #f0f0f0;
-                    margin-bottom: 30px;
-                }
-
-                /* Logo and branding */
-                #logoImg {
-                    height: 70px;
-                    object-fit: contain;
-                }
-
-                #sessionIdDisplay {
-                    background-color: #f8f9fa;
-                    padding: 8px 15px;
-                    border-radius: 20px;
-                    font-size: 0.9rem;
-                    color: #565656;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-                }
-
-                #welcomeMessage {
-                    font-size: 1.2rem;
-                    color: #2c1810;
-                    margin: 0 20px;
-                }
-
-                /* Controls section */
-                .controls {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 20px;
-                }
-
-                .button-group {
-                    display: flex;
-                    gap: 10px;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                }
-
-                /* Buttons */
-                button {
-                    padding: 10px 20px;
-                    border: none;
-                    border-radius: 25px;
-                    background-color: #40276a;
-                    color: white;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-
-                button:hover {
-                    background-color: #553285;
-                    transform: translateY(-1px);
-                }
-
-                button:disabled {
-                    background-color: #cccccc;
-                    cursor: not-allowed;
-                    transform: none;
-                }
-
-                /* Timer and output */
-                #timerDisplay {
-                    font-size: 1.2rem;
-                    font-weight: 600;
-                    color: #40276a;
-                    padding: 10px 20px;
-                    background-color: #f8f9fa;
-                    border-radius: 20px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-                }
-
-                #output {
-                    margin-top: 20px;
-                    padding: 15px;
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    max-height: 200px;
-                    overflow-y: auto;
-                }
-
-                #output p {
-                    margin: 8px 0;
-                    padding: 8px;
-                    border-radius: 4px;
-                    background-color: white;
-                }
-
-                /* Question modal styles */
-                .question-modal {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background-color: white;
-                    border-radius: 12px;
-                    padding: 20px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-                    max-width: 400px;
-                    width: 90%;
-                }
-
-                .question-list {
-                    list-style: none;
-                    padding: 0;
-                    margin: 15px 0;
-                }
-
-                .question-item {
-                    padding: 10px;
-                    margin: 5px 0;
-                    border-radius: 8px;
-                    background-color: #f8f9fa;
-                    cursor: pointer;
-                    transition: background-color 0.2s ease;
-                }
-
-                .question-item:hover {
-                    background-color: #e9ecef;
-                }
-            </style>
+            <link rel="stylesheet" href="/static/styles.css">
         </head>
         <body>
-            <div class="container">
-                <header class="header">
-                    <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo">
-                    <p id="welcomeMessage">Welcome ${userId}</p>
-                    <div id="sessionIdDisplay">${session}</div>
+            <div class="popup-container">
+                <header class="popup-header">
+                    <div class="logo-welcome-container">
+                        <img id="logoImg" src="/static/images/logo.png" alt="LectureMate Logo" class="popup-logo">
+                        <p class="welcome-message">Welcome ${userId}</p>
+                    </div>
+                    <div id="timerDisplay" class="timer-display">00:00:00</div>
+                    <div class="session-display" title="${session}">${session}</div>
                 </header>
 
                 <main class="controls">
+                    <div id="output" class="output-container">
+                        <p class="output-message">Click "Start Session" to begin recording</p>
+                    </div>
+
                     <div class="button-group">
-                        <button id="runScriptButton">
+                        <button id="userGradesButton" class="recorder-button">
+                            <span>User Grades</span>
+                            <span>📊</span>
+                        </button>
+                        <button id="runScriptButton" class="recorder-button">
                             <span>Start Session</span>
                             <span>▶️</span>
                         </button>
-                        <button id="pauseButton">
+                        <button id="pauseButton" class="recorder-button">
                             <span>Pause</span>
                             <span>⏯️</span>
                         </button>
-                        <button id="stopButton">
-                            <span>Stop Session</span>
+                        <button id="stopButton" class="recorder-button">
+                            <span>End Session</span>
                             <span>⏹️</span>
                         </button>
                     </div>
 
-                    <div id="timerDisplay"></div>
-
                     <div class="button-group">
-                        <button id="questionsButton">❓ 0 ❓</button>
-                        <button id="answerButton">Submit Answer</button>
-                    </div>
-
-                    <div id="output">
-                        <p>Click "Start Session" to begin recording</p>
+                        <button id="questionsButton" class="recorder-button">❓ 0 ❓</button>
+                        <button id="answerButton" class="recorder-button">Submit Answer</button>
                     </div>
                 </main>
             </div>
@@ -224,7 +78,9 @@ function openPopup() {
 
     // State variables for recording management
     let interval;
-    let seconds = 0;
+    let startTime = 0;
+    let elapsedTime = 0;
+    let pausedTime = 0;
     let isRecording = false;
     let isPaused = false;
     // create constant random number between 50 and 70
@@ -232,6 +88,7 @@ function openPopup() {
     let questionIndex = 0;
 
     // Get references to popup elements after the document is written
+    const userGradesButton = popup.document.getElementById("userGradesButton");
     const runButton = popup.document.getElementById("runScriptButton");
     const pauseButton = popup.document.getElementById("pauseButton");
     const stopButton = popup.document.getElementById("stopButton");
@@ -259,9 +116,10 @@ function openPopup() {
         // Add a timestamp to the message
         const timestamp = new Date().toLocaleTimeString(); // Format: HH:MM:SS
         statusElement.textContent = `[${timestamp}] ${message}`;
+        statusElement.className = "output-message";
         
         if (isError) {
-            statusElement.style.color = "red";
+            statusElement.classList.add("error-message");
         }
         // Prepend new status messages to keep the latest on top
         outputDiv.insertBefore(statusElement, outputDiv.firstChild);
@@ -293,8 +151,50 @@ function openPopup() {
     }
 
     // --- Timer functions ---
+    function formatTime(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        return [
+            hours.toString().padStart(2, '0'),
+            minutes.toString().padStart(2, '0'),
+            seconds.toString().padStart(2, '0')
+        ].join(':');
+    }
+    
+    function updateTimerDisplay(status = 'running') {
+        if (!timerElement) return;
+        
+        // Calculate current seconds
+        let currentSeconds = Math.floor(elapsedTime / 1000);
+        
+        // Update timer text
+        timerElement.textContent = formatTime(currentSeconds);
+        
+        // Update timer appearance based on status
+        timerElement.className = 'timer-display';
+        if (status === 'running') {
+            timerElement.classList.add('timer-running');
+        } else if (status === 'paused') {
+            timerElement.classList.add('timer-paused');
+        } else if (status === 'stopped') {
+            timerElement.classList.add('timer-stopped');
+        }
+    }
+
     async function startTimer() {
         clearInterval(interval); // Clear any existing interval
+        
+        // Initialize times
+        if (!isPaused) {
+            startTime = Date.now();
+            elapsedTime = 0;
+            pausedTime = 0;
+        } else {
+            // If resuming from pause, adjust the start time
+            startTime = Date.now() - pausedTime;
+        }
 
         // 3-second timeout to enable buttons after starting the recording
         setTimeout(() => {
@@ -302,29 +202,27 @@ function openPopup() {
             stopButton.disabled = false;
         }, 3000);
 
-        const startTime = Date.now() - seconds * 1000; // Adjust start time based on current seconds
-
         interval = setInterval(() => {
+            // Calculate elapsed time including any previous paused time
             const now = Date.now();
-            const elapsed = Math.floor((now - startTime) / 1000);
-
-            if (elapsed !== seconds) {
-                seconds = elapsed;
-
-                // Update the timerDisplay element directly
-                timerElement.textContent = `Recording... ${seconds}s`;
-
-                // Ask question every 60 seconds and answer button content is "Answer Question"
-                if (seconds === randomNumber) {
-                    try {
-                        generateQuestion(); // Call the function to generate a question
-                    } catch (error) {
-                        pauseTimer(); // Pause the timer if an error occurs
-                        console.error('Error generating question:', error);
-                        updateStatus(`Error generating question ${error.message}`, true);
-                    } finally {
-                        randomNumber = seconds + Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
-                    }
+            elapsedTime = now - startTime;
+            
+            // Update the timer display
+            updateTimerDisplay('running');
+            
+            // Get seconds for question timing
+            const currentSeconds = Math.floor(elapsedTime / 1000);
+            
+            // Ask question every randomNumber seconds
+            if (currentSeconds === randomNumber) {
+                try {
+                    generateQuestion(); // Call the function to generate a question
+                } catch (error) {
+                    pauseTimer(); // Pause the timer if an error occurs
+                    console.error('Error generating question:', error);
+                    updateStatus(`Error generating question ${error.message}`, true);
+                } finally {
+                    randomNumber = currentSeconds + Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
                 }
             }
         }, 100); // Use a smaller interval for smoother updates
@@ -332,11 +230,19 @@ function openPopup() {
 
     function stopTimer() {
         clearInterval(interval);
-        const timerElement = popup.document.getElementById("timerDisplay");
-            if(timerElement) {
-                 timerElement.textContent = `Recording stopped. Total time: ${seconds}s`;
-            }
-        seconds = 0; // Reset timer
+        
+        // Calculate final elapsed time
+        const totalSeconds = Math.floor(elapsedTime / 1000);
+        
+        // Update display with stopped status
+        updateTimerDisplay('stopped');
+        
+        // Reset timer variables
+        elapsedTime = 0;
+        pausedTime = 0;
+        
+        // Add stopped message to output
+        updateStatus(`Ending Session - Total time: ${formatTime(totalSeconds)}`);
     }
 
     async function pauseTimer() {
@@ -350,8 +256,11 @@ function openPopup() {
                 // Resume
                 updateStatus("Resuming recording...");
                 const data = await callApi('/resume-recording');
-                clearInterval(interval); // Clear existing interval
-                startTimer(); // Resume timer
+                
+                // Resume timer - calculate new start time based on total elapsed time
+                startTime = Date.now() - pausedTime;
+                startTimer();
+                
                 isPaused = false;
                 pauseButton.textContent = "Pause⏯️"; // Update button text
                 updateStatus(`Resumed: ${data.message}`);
@@ -359,11 +268,20 @@ function openPopup() {
                 // Pause
                 updateStatus("Pausing recording...");
                 clearInterval(interval);
-                const data = await callApi('/pause-recording'); // Ensure data is assigned here
+                
+                // Store when we paused
+                pausedTime = Date.now() - startTime;
+                
+                // Update timer display to show paused state
+                updateTimerDisplay('paused');
+                
+                const data = await callApi('/pause-recording');
+                
                 setTimeout(() => {
                     pauseButton.disabled = false;
                     stopButton.disabled = false;
                 }, 2000);
+                
                 isPaused = true;
                 pauseButton.textContent = "Resume⏯️"; // Update button text
                 updateStatus(`Paused: ${data.message}`);
@@ -371,8 +289,6 @@ function openPopup() {
         } catch (error) {
             // Error is logged by callApi, state might be inconsistent
             updateStatus(`Pause/Resume failed: ${error.message}`, true);
-        } finally {
-            timerElement.textContent = `Recording paused at ${seconds}s`;
         }
     }
 
@@ -451,7 +367,6 @@ function openPopup() {
             popup.alert("No recording is in progress!");
             return;
         }
-        updateStatus("Stopping recording...");
 
         try {
             // Disable buttons to prevent multiple clicks
@@ -478,7 +393,6 @@ function openPopup() {
             // Re-enable run, disable pause/stop
             runButton.disabled = false;
             pauseButton.textContent = "Pause⏯️"; // Reset button text
-            updateStatus(`Stopped: ${data.message}`);
             randomNumber = Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Reset random number
         } 
     };
@@ -492,19 +406,12 @@ function openPopup() {
 
         // Create a modal-like div to display the questions
         const questionModal = popup.document.createElement("div");
-        questionModal.style.position = "fixed";
-        questionModal.style.top = "10px"; // Position at the top
-        questionModal.style.right = "10px"; // Changed to top-right position
-        questionModal.style.width = "auto"; // Ensure the modal doesn't span the entire width
-        questionModal.style.backgroundColor = "#fff";
-        questionModal.style.border = "1px solid #ccc";
-        questionModal.style.padding = "20px";
-        questionModal.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
-        questionModal.style.zIndex = "1000";
-
+        questionModal.className = "question-modal";
+        
         // Add a close button
         const closeButton = popup.document.createElement("button");
         closeButton.textContent = "Close";
+        closeButton.className = "recorder-button";
         closeButton.style.marginBottom = "10px";
         closeButton.onclick = () => {
             questionModal.remove();
@@ -513,16 +420,12 @@ function openPopup() {
 
         // Create a list of questions
         const questionList = popup.document.createElement("ul");
-        questionList.style.direction = "rtl"; // Set direction to right-to-left
+        questionList.className = "question-list";
+        
         waitingQuestions.forEach((question, index) => {
             const listItem = popup.document.createElement("li");
             listItem.textContent = question;
-            listItem.style.cursor = "pointer";
-            listItem.style.color = "#007BFF";
-            listItem.style.textDecoration = "underline";
-            listItem.style.borderBottom = "1px solid #ccc"; // Add a line between items
-            listItem.style.padding = "5px 0"; // Add spacing between items
-
+            listItem.className = "question-item";
 
             // Add click event to call /answer-question with the index
             listItem.onclick = async () => {
@@ -541,8 +444,7 @@ function openPopup() {
                         body: JSON.stringify({ index: questionIndex })
                     });
             
-                    // Remove the question from the waitingQuestions list
-                    waitingQuestions.splice(index, 1);
+                    
             
                     // Disable randomNumber
                     randomNumber = 0
@@ -551,7 +453,10 @@ function openPopup() {
                     answerButton.disabled = false;
                     
                     // Update the status with the data message
-                    updateStatus(`Answering question ${questionIndex + 1}: ${data.message}`);
+                    updateStatus(`Answering question ${questionIndex}: ${data.data.feedback}`);
+
+                    // Remove the question from the waitingQuestions list
+                    waitingQuestions.splice(index, 1);
                 } catch (error) {
                     // Handle errors and update the status
                     updateStatus(`Error answering question ${index + 1}: ${error.message}`, true);
@@ -594,8 +499,14 @@ function openPopup() {
             // Error logged by callApi
             updateStatus(`Failed to answer: ${error.message}`, true);
         } finally {
-            randomNumber = seconds + Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
+            randomNumber = Math.floor(elapsedTime / 1000) + Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
         }
+    };
+
+    userGradesButton.onclick = async () => {
+        // Open the user-grades.html page in a new tab
+        console.log("Opening user-grades.html page");
+        popup.location.href = '/user-grades';
     };
 
         // Handle popup closing - attempt to stop recording if active

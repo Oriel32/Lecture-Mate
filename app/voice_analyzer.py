@@ -18,7 +18,6 @@ load_dotenv()
 
 class VoiceRecorder:
     def __init__(self, user_id="Guest"):
-        self.old_transcript = None
         self.transcript = {}
         self.questions = []
         self.question_count = 0
@@ -45,6 +44,7 @@ class VoiceRecorder:
         self.user_id = user_id
         self.user = User(user_id)
         self.mongodb_uri = os.getenv("MONGODB_URI")
+        self.session_data = None
 
         # Load the LLM Model
         self.model_name = os.getenv("MODEL_NAME", "valhalla/t5-small-qg-hl")  # Default model
@@ -66,6 +66,7 @@ class VoiceRecorder:
         sessions_info = []
         sessions_id = []
         if self.user.user_data and self.user_id != "Guest":
+            # Make a list of sessions topic for the user display - if there is not a session topic, append the session_id
             for session in self.user.user_data.get("sessions", []):
                 sessions_id.append(session.get("session_id"))
                 topic = session.get("session_topic")
@@ -79,11 +80,8 @@ class VoiceRecorder:
                 "sessions_id": sessions_id,
                 "sessions_topic": sessions_info
                 }
-        
     def set_session_data(self, session_id):
-        session_data = self.user.set_session_data(session_id)
-        if session_data:
-            self.old_transcript = session_data["transcript"]
+        self.session_data = self.user.set_session_data(session_id)
     
     def run(self):
         """
@@ -128,7 +126,6 @@ class VoiceRecorder:
         
         # Save the transcript to MongoDB if have transcript
         if len(self.transcript) > 2:
-            self.transcript = {** self.old_transcript, **self.transcript}
             self.save_transcript_to_mongodb()
             
         print("Recording stopped.")
@@ -156,7 +153,6 @@ class VoiceRecorder:
         """
         Resets the recorder by clearing the variables.
         """
-        self.old_transcript = None
         self.transcript = {}
         self.questions = []
         self.answers = []
@@ -234,18 +230,6 @@ class VoiceRecorder:
             if timestamp and audio:
                 self.analyze_audio(timestamp, audio)
                 self.audio_queue.task_done()
-        
-        while self.recording_flag.is_set():
-            time.sleep(0.5)
-            
-        try:
-            timestamp, audio = self.audio_queue.get(timeout=5)  # Blocks for 5 seconds
-        except queue.Empty:
-            print("Queue is empty - closing session")
-        
-        if timestamp and audio:
-            self.analyze_audio(timestamp, audio)
-            self.audio_queue.task_done()
 
     def analyze_audio(self, timestamp, audio):
         """
@@ -578,12 +562,7 @@ class VoiceRecorder:
             print("Model not loaded. Skipping question generation.")
             return None
         
-        if len(self.transcript) < 2:
-            print("No transcript available.")
-            return None
         formatted_transcript=""
-        if self.user.session_data:
-            formatted_transcript = "\n".join([f"{k}: {v}" for k, v in self.user.session_data["transcript"].items()]) 
         with self.transcript_lock:
             if not self.transcript:
                 print("No transcript available.")
@@ -636,25 +615,27 @@ class VoiceRecorder:
             print("answer_flag is not set")
             self.answers.append("")
             self.answer_flag.set()
-            return f"Answering question {index}..."
+            return f"{self.questions[index]}"
         
     def save_transcript_to_mongodb(self):
         """
         Saves the transcript to MongoDB.
         """
         # Prepare the session data
-        if self.transcript:
-            session_data = {
-                "session_id": self.user.session_id,
-                "session_topic": self.generate_topic(),
-                "time": list(self.transcript.keys())[-1],
-                "questions": self.questions,
-                "answers": self.answers,
-                "feedbacks": self.feedbacks,
-                "grades": self.grades,
-                "transcript": self.transcript
-            }
-
+        session_topic = None
+        if self.session_data == None or "session_topic" not in self.session_data:
+            session_topic = self.generate_topic()
+        session_data = {
+            "session_id": self.user.session_id,
+            "session_topic": session_topic,
+            "time": list(self.transcript.keys())[0],
+            "questions": self.questions,
+            "answers": self.answers,
+            "feedbacks": self.feedbacks,
+            "grades": self.grades,
+            "transcript": self.transcript
+        }
+            
         self.user.save_session_to_mongodb(session_data)
 
 if __name__ == "__main__":

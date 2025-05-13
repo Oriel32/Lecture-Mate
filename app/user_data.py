@@ -68,12 +68,13 @@ class User:
             
             if self.session_data:
                 # Append new data to the existing session
-                self.session_data["session_topic"] = new_session_data["session_topic"]
+                if new_session_data["session_topic"] != None:
+                    self.session_data["session_topic"] = new_session_data["session_topic"]
                 self.session_data["questions"].extend(new_session_data["questions"])
                 self.session_data["answers"].extend(new_session_data["answers"])
                 self.session_data["feedbacks"].extend(new_session_data["feedbacks"])
                 self.session_data["grades"].extend(new_session_data["grades"])
-                self.session_data["transcript"] = new_session_data["transcript"]
+                self.session_data["transcript"].update(new_session_data["transcript"])
 
                 # Update the session in the database
                 collection.update_one(

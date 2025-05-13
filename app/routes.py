@@ -43,6 +43,10 @@ def home():
     """Renders the main page with the button to open the popup."""
     return render_template('home.html', title="Home", info=voiceRecorder_info)
 
+@app.route('/user-grades')
+def user_grades():
+    return render_template('user-grades.html', title="User Grades")
+
 @app.route('/run-voice-recorder', methods=['POST'])
 def run_voice_recorder():
     """Starts the voice recorder background process."""
