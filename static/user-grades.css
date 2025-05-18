@@ -1,0 +1,242 @@
+/* =========================================
+   User Grades Styling
+   ========================================= */
+
+/* === Layout and Containers === */
+.popup-container {
+    padding: 20px;
+}
+
+.grades-section {
+    margin-bottom: 25px;
+}
+
+.user-info {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(240, 240, 245, 0.5);
+}
+
+/* === Table Styling === */
+.table th, 
+.table td {
+    vertical-align: middle;
+    font-size: 1.05rem;
+}
+
+.table th {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.table-header {
+    background-color: #40276a; 
+    color: white;
+}
+
+thead th {
+    font-size: 1.1rem;
+    letter-spacing: 0.8px;
+}
+
+/* === Session Rows === */
+.session-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.session-row:hover {
+    background-color: #f1edf7 !important;
+}
+
+.session-row.active {
+    background-color: #e7e1f2 !important;
+    border-left: 4px solid #40276a;
+}
+
+.info-row {
+    background-color: #f1edf7;
+    font-style: italic;
+}
+
+/* === Session Details === */
+.session-details {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.08);
+    padding: 1.25rem;
+}
+
+.session-details-content {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.session-title {
+    font-weight: 600;
+    color: #40276a;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #e7e1f2;
+    padding-bottom: 8px;
+}
+
+.session-time {
+    font-size: 1.05rem;
+    color: #444;
+}
+
+/* === Badge Styling === */
+.badge {
+    display: inline-block;
+    padding: 0.3em 0.5em;
+    font-size: 0.75em;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    letter-spacing: 0;
+}
+
+.grades-pill .badge {
+    font-size: 0.9rem;
+    padding: 0.3em 0.4em;
+}
+
+.user-badge {
+    font-size: 0.85rem;
+    padding: 0.3em 0.6em;
+    background-color: #40276a;
+    color: #fff;
+}
+
+.badge-primary {
+    background-color: #40276a;
+    color: #fff;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-orange {
+    background-color: #fd7e14;
+    color: #fff;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.badge-light {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+/* === Cards Styling === */
+.card {
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #e9ecef;
+}
+
+.card-body {
+    padding: 1.25rem;
+    font-size: 1.05rem;
+}
+
+.card-header strong {
+    font-size: 1.1rem;
+}
+
+.card-title {
+    font-size: 1.15rem;
+    letter-spacing: 0.3px;
+}
+
+.session-card {
+    margin-bottom: 15px;
+}
+
+.feedback-card-body {
+    padding: 1.5rem;
+}
+
+.metrics-text {
+    font-size: 1.05rem;
+    color: #555;
+}
+
+/* === Feedback Items === */
+.feedback-item {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e7e1f2;
+}
+
+.feedback-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.question-answer {
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f9f9fc;
+    border-left: 4px solid #40276a;
+    text-align: start;
+}
+
+.feedback-justification {
+    padding: 15px;
+    background-color: #f1edf7;
+    border-radius: 8px;
+    margin-top: 10px;
+    border-left: 4px solid #5a3996;
+    text-align: start;
+}
+
+.question-label, 
+.answer-label, 
+.feedback-label {
+    display: inline-block;
+    min-width: 80px;
+    color: #40276a;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.feedback-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+    display: block;
+    margin-top: 5px;
+}
+
+/* === Typography === */
+.user-title, .section-title {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #333;
+}

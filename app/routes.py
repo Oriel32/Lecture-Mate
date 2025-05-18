@@ -10,6 +10,7 @@ app = Flask(__name__, template_folder='../templates', static_folder='../static')
 # --- Global Instances ---
 # Initialize these once when the application starts
 recorder = None
+voiceRecorder_info = None
 
 
 # --- Helper Function for JSON Responses ---
@@ -29,6 +30,7 @@ def index():
 @app.route('/home')
 def home():
     global recorder
+    global voiceRecorder_info
     username = request.args.get('username', 'Guest')
     try:
         recorder = VoiceRecorder(username)
@@ -45,7 +47,10 @@ def home():
 
 @app.route('/user-grades')
 def user_grades():
-    return render_template('user-grades.html', title="User Grades")
+    global recorder
+    global voiceRecorder_info
+    print(voiceRecorder_info["user_id"])
+    return render_template('user-grades.html', title="User Grades", info=voiceRecorder_info)
 
 @app.route('/run-voice-recorder', methods=['POST'])
 def run_voice_recorder():

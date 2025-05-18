@@ -63,22 +63,20 @@ class VoiceRecorder:
         """
         Returns the model name, 
         """
-        sessions_info = []
-        sessions_id = []
-        if self.user.user_data and self.user_id != "Guest":
+        sessions_topic = []
+        sessions_grades = {}
+        if self.user.user_data:# and self.user_id != "Guest":
             # Make a list of sessions topic for the user display - if there is not a session topic, append the session_id
             for session in self.user.user_data.get("sessions", []):
-                sessions_id.append(session.get("session_id"))
-                topic = session.get("session_topic")
-                if topic:
-                    sessions_info.append(topic)
-                else:
-                    sessions_info.append(sessions_id[-1])
+                topic = session.get("session_topic", session.get("session_id"))
+                sessions_topic.append(topic)
+                sessions_grades.update({topic: {"time" : session.get("time"), "grades" : session.get("grades"), "feedbacks" : session.get("feedbacks"), "questions" : session.get("questions"), "answers" : session.get("answers")}})
+        
         return {"model_name" : self.model_name,
                 "mongodb_uri" : self.mongodb_uri,
                 "user_id" : self.user_id,
-                "sessions_id": sessions_id,
-                "sessions_topic": sessions_info
+                "sessions_topic": sessions_topic,
+                "sessions_grades": sessions_grades
                 }
     def set_session_data(self, session_id):
         self.session_data = self.user.set_session_data(session_id)

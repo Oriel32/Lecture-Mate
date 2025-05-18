@@ -1,6 +1,207 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container">
-    <h1>User Grades</h1>
+<div class="container my-4">
+    <div class="popup-container">
+        <!-- Page header -->
+        <div class="popup-header">
+            <h1 class="mb-0">User Grades</h1>
+        </div>
+        
+        <div class="info-box">
+            <!-- User information section -->
+            <div class="user-info mb-4">
+                <h3 class="user-title">
+                    <i class="fas fa-user-circle me-2"></i>User ID: 
+                    <span class="badge user-badge">{{ info.user_id }}</span>
+                </h3>
+            </div>
+            
+            <!-- Grades section -->
+            <div class="grades-section">
+                <h3 class="section-title mb-3">
+                    <i class="fas fa-graduation-cap me-2"></i>Course Grades
+                </h3>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-header">
+                            <tr>
+                                <th>Session/Topic</th>
+                                <th>Grades</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, value in info.sessions_grades.items() %}
+                                {% if value is string %}
+                                <!-- Info row for string values -->
+                                <tr class="info-row">
+                                    <td colspan="2"><strong>{{ key }}:</strong> {{ value }}</td>
+                                </tr>
+                                {% else %}
+                                <!-- Session row with grades -->
+                                <tr class="session-row" data-session-id="{{ key }}">
+                                    <td>{{ key }}</td>
+                                    <td>
+                                        {% if value|length > 0 %}
+                                            {% if value is iterable and value is not string %}
+                                                <!-- Multiple grades display -->
+                                                <div class="grades-pill">
+                                                    {% for grade in value.grades %}
+                                                        {% if grade|int >= 85 %}
+                                                            <span class="badge badge-success me-1">{{ grade }}</span>
+                                                        {% elif grade|int >= 70 %}
+                                                            <span class="badge badge-warning me-1">{{ grade }}</span>
+                                                        {% elif grade|int >= 55 %}
+                                                            <span class="badge badge-orange me-1">{{ grade }}</span>
+                                                        {% else %}
+                                                            <span class="badge badge-danger me-1">{{ grade }}</span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            {% else %}
+                                                <!-- Single grade display -->
+                                                {% if value|int >= 85 %}
+                                                    <span class="badge badge-success">{{ value }}</span>
+                                                {% elif value|int >= 70 %}
+                                                    <span class="badge badge-warning">{{ value }}</span>
+                                                {% elif value|int >= 55 %}
+                                                    <span class="badge badge-orange">{{ value }}</span>
+                                                {% else %}
+                                                    <span class="badge badge-danger">{{ value }}</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge badge-light">No grades</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                
+                                <!-- Expandable details row -->
+                                <tr class="session-details-row" id="session-details-{{ key }}" style="display: none;">
+                                    <td colspan="2">
+                                        <div class="session-details p-3">
+                                            <h4 class="session-title mb-3">
+                                                <i class="fas fa-info-circle me-2"></i>{{ key }}
+                                            </h4>
+                                            
+                                            <div class="session-details-content mt-3">
+                                                <!-- Session time card -->
+                                                <div class="card session-card mb-3">
+                                                    <div class="card-header">
+                                                        <strong class="card-title">
+                                                            <i class="fas fa-clock me-2"></i>Session Time
+                                                        </strong>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <span class="session-time">{{ value.time }}</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Feedback card -->
+                                                <div class="card feedback-card mb-3">
+                                                    <div class="card-header">
+                                                        <strong class="card-title">
+                                                            <i class="fas fa-comment-alt me-2"></i>Feedbacks
+                                                        </strong>
+                                                    </div>
+                                                    <div class="card-body feedback-card-body">
+                                                        {% for feedback in value.feedbacks %}
+                                                            <div class="feedback-item">
+                                                                <!-- Question display -->
+                                                                <div class="question-answer mb-3">
+                                                                    <strong class="question-label">Q:</strong> 
+                                                                    <span class="text-primary fw-medium fs-6">{{ value.questions[loop.index0] }}</span>
+                                                                </div>
+                                                                
+                                                                <!-- Answer display -->
+                                                                <div class="question-answer mb-3">
+                                                                    <strong class="answer-label">A:</strong> 
+                                                                    <span class="text-secondary fs-6">{{ value.answers[loop.index0] }}</span>
+                                                                </div>
+                                                                
+                                                                <!-- Feedback display -->
+                                                                <div class="feedback-justification">
+                                                                    <strong class="feedback-label">Feedback:</strong> 
+                                                                    <span class="feedback-text">{{ feedback["Short Justification"] }}</span>
+                                                                    
+                                                                    <div class="mt-2">
+                                                                        <strong>Score:</strong> 
+                                                                        <span class="badge {% if feedback['Total Score']|int >= 85 %}bg-success
+                                                                                           {% elif feedback['Total Score']|int >= 70 %}bg-warning text-dark
+                                                                                           {% elif feedback['Total Score']|int >= 55 %}badge-orange
+                                                                                           {% else %}bg-danger
+                                                                                           {% endif %}">
+                                                                            {{ feedback["Total Score"] }}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            {% if not loop.last %}
+                                                                <hr class="my-2">
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Metrics card -->
+                                                <div class="card metrics-card">
+                                                    <div class="card-header">
+                                                        <strong class="card-title">
+                                                            <i class="fas fa-chart-line me-2"></i>Additional Metrics
+                                                        </strong>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <span class="metrics-text">No additional metrics yet</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- JavaScript for interactive functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all session rows with expandable content
+        const sessionRows = document.querySelectorAll('.session-row');
+        
+        sessionRows.forEach(row => {
+            row.addEventListener('click', function() {
+                const sessionId = this.getAttribute('data-session-id');
+                const detailsRow = document.getElementById(`session-details-${sessionId}`);
+                
+                // Toggle details visibility
+                if (detailsRow.style.display === 'none') {
+                    // 1. Close all other open details
+                    document.querySelectorAll('.session-details-row').forEach(r => {
+                        r.style.display = 'none';
+                    });
+                    
+                    // 2. Remove active class from all rows
+                    document.querySelectorAll('.session-row').forEach(r => {
+                        r.classList.remove('active');
+                    });
+                    
+                    // 3. Show the clicked row details and add active class
+                    detailsRow.style.display = 'table-row';
+                    this.classList.add('active');
+                } else {
+                    // Hide details and remove active class
+                    detailsRow.style.display = 'none';
+                    this.classList.remove('active');
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

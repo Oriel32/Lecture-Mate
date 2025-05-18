@@ -37,8 +37,8 @@ class User:
 
     def user_info(self):
         if self.user_data:
-            sessions = len([session["session_id"] for session in self.user_data.get("sessions", [])], default=0)
-        return self.user_id, sessions
+            grades = [session["grades"] for session in self.user_data.get("sessions", [])]
+        return self.user_id, grades
 
     def set_session_data(self, session_id):
         if self.user_data:
