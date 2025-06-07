@@ -86,6 +86,7 @@ def run_voice_recorder():
 def stop_recording():
     """Stops the voice recording process."""
     global recorder
+    global voiceRecorder_info
     if not recorder:
          return create_response("error", "VoiceRecorder is not initialized.", status_code=500)
     try:
@@ -102,6 +103,7 @@ def stop_recording():
         
         # If stop() could return the result (e.g., the generated question):
         recorder.stop()
+        voiceRecorder_info = recorder.info()  # Update info after stopping
         # final_result = recorder.stop() # Hypothetical modification
         # logging.info(f"Final result from recorder: {final_result}")
         return create_response("success", "Recording stopped successfully.")#, data={"final_result": final_result})

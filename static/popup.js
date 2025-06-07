@@ -498,7 +498,7 @@ function openPopup() {
             // Error logged by callApi
             updateStatus(`Failed to answer: ${error.message}`, true);
         } finally {
-            randomNumber = Math.floor(elapsedTime / 1000) + Math.floor(Math.random() * (70 - 50 + 1)) + 50; // Update random number for next question
+            randomNumber = Math.floor(elapsedTime / 1000) + Math.floor(Math.random() * (50 - 30 + 1)) + 30; // Update random number for next question (30-50 seconds)
         }
     };
 

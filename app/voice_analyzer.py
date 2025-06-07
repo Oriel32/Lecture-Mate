@@ -125,6 +125,7 @@ class VoiceRecorder:
         # Save the transcript to MongoDB if have transcript
         if len(self.transcript) > 2:
             self.save_transcript_to_mongodb()
+            self.user = User(self.user_id)
             
         print("Recording stopped.")
         self.reset()
@@ -391,6 +392,8 @@ class VoiceRecorder:
 
             Your task is to evaluate the lecturer’s answer based on the following six criteria.
             For each criterion, assign a score within the specified range.
+            
+            The transcript might contain wrong or incomplete information - please evaluate the answer based on the context of the lecture and the question asked.
 
             ⸻
 
