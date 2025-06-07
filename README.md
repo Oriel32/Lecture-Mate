@@ -2,7 +2,7 @@
 
 LectureMate is an intelligent voice-based lecture evaluator that enables real-time lecture analysis, question generation, and performance feedback using AI and speech recognition.
 
-![LectureMate Logo](static/images/logo.png)
+![LectureMate Logo](static/images/favicon.PNG)
 
 ---
 
