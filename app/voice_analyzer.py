@@ -65,7 +65,7 @@ class VoiceRecorder:
         """
         sessions_topic = []
         sessions_grades = {}
-        if self.user.user_data:# and self.user_id != "Guest":
+        if self.user.user_data and self.user_id != "Guest":
             # Make a list of sessions topic for the user display - if there is not a session topic, append the session_id
             for session in self.user.user_data.get("sessions", []):
                 topic = session.get("session_topic", session.get("session_id"))
